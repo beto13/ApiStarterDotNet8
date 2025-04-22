@@ -1,8 +1,8 @@
 ﻿using Application.Common;
 using Application.Common.Pagination;
-using Application.Interfaces.Services;
+using Application.Dtos.User;
+using Application.Filtering.Interfaces;
 using AutoMapper;
-using Domain.Dtos.User;
 using Domain.Entities;
 using MediatR;
 using System.Net;
@@ -22,21 +22,28 @@ namespace Application.UseCases.Users.Queries.GetFilteredUsers
 
         public async Task<ApiResponse<PagedResult<UserDto>>> Handle(GetFilteredUsersQuery request, CancellationToken cancellationToken)
         {
-            var parameters = new PaginationParameters { PageNumber = request.PageNumber, PageSize = request.PageSize };
-
-            var result = await filterService.Execute(request.UserFilter, parameters);
-
-            var dtoList = mapper.Map<List<UserDto>>(result.Data);
-
-            var pagedDto = new PagedResult<UserDto>
+            try
             {
-                Data = dtoList,
-                TotalCount = result.TotalCount,
-                PageNumber = result.PageNumber,
-                PageSize = result.PageSize
-            };
+                var parameters = new PaginationParameters { PageNumber = request.PageNumber, PageSize = request.PageSize };
 
-            return new ApiResponse<PagedResult<UserDto>>(HttpStatusCode.OK, "", true, pagedDto);
+                var result = await filterService.Execute(request.UserFilter, parameters);
+
+                var dtoList = mapper.Map<List<UserDto>>(result.Data);
+
+                var pagedDto = new PagedResult<UserDto>
+                {
+                    Data = dtoList,
+                    TotalCount = result.TotalCount,
+                    PageNumber = result.PageNumber,
+                    PageSize = result.PageSize
+                };
+
+                return new ApiResponse<PagedResult<UserDto>>(HttpStatusCode.OK, "Usuarios recuperados exitosamente", true, pagedDto);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<PagedResult<UserDto>>(HttpStatusCode.InternalServerError, ex.Message, true, null!);
+            }
         }
     }
 }

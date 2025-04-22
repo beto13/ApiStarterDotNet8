@@ -1,7 +1,7 @@
 ﻿using Application.Common;
+using Application.Dtos.User;
 using Application.Interfaces.Persistence;
 using AutoMapper;
-using Domain.Dtos.User;
 using Domain.Entities;
 using MediatR;
 
@@ -22,6 +22,13 @@ namespace Application.UseCases.Users.Commands.Create
         {
             try
             {
+                var userRepository = unitOfWork.Repository<User>();
+
+                var existingUser = await userRepository.FilterAsync(u => u.Email == request.Dto.Email);
+
+                if (existingUser.Any())
+                    return new ApiResponse<UserDto>(System.Net.HttpStatusCode.BadRequest, Messages.User.EmailAlreadyExists, true, new UserDto { });
+
                 var user = new User
                 {
                     Id = Guid.NewGuid(),
@@ -29,17 +36,16 @@ namespace Application.UseCases.Users.Commands.Create
                     Email = request.Dto.Email
                 };
 
-                var userRepository = unitOfWork.Repository<User>();
                 await userRepository.AddAsync(user);
                 await unitOfWork.SaveChangesAsync();
 
                 var dto = mapper.Map<UserDto>(user);
 
-                return new ApiResponse<UserDto>(System.Net.HttpStatusCode.Created, "Usuario creado correctamente", true, dto);
+                return new ApiResponse<UserDto>(System.Net.HttpStatusCode.Created, Messages.User.Created, true, dto);
             }
             catch (Exception ex)
             {
-                return new ApiResponse<UserDto>(System.Net.HttpStatusCode.InternalServerError, ex.Message, false, new UserDto { });
+                return new ApiResponse<UserDto>(System.Net.HttpStatusCode.InternalServerError, Messages.User.CreateError + ex.Message, false, new UserDto { });
             }
         }
     }

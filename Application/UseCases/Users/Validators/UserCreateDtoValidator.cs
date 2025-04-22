@@ -1,4 +1,4 @@
-﻿using Domain.Dtos.User;
+﻿using Application.Dtos.User;
 using FluentValidation;
 
 namespace Application.UseCases.Users.Validators

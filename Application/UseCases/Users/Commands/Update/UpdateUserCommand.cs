@@ -1,7 +1,8 @@
-﻿using Domain.Dtos.User;
+﻿using Application.Common;
+using Application.Dtos.User;
 using MediatR;
 
 namespace Application.UseCases.Users.Commands.Update
 {
-    public record UpdateUserCommand(UserDto UserDto) : IRequest<bool>;
+    public record UpdateUserCommand(UserDto UserDto) : IRequest<ApiResponse<bool>>;
 }
