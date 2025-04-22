@@ -4,8 +4,20 @@
     {
         private const int MaxPageSize = 100;
 
-        public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
+        private int pageNumber = 1;
+        private int pageSize = 10;
+
+        public int PageNumber
+        {
+            get => pageNumber;
+            set => pageNumber = value <= 0 ? 1 : value;
+        }
+
+        public int PageSize
+        {
+            get => pageSize;
+            set => pageSize = value <= 0 ? 10 : (value > MaxPageSize ? MaxPageSize : value);
+        }
 
         public string? OrderBy { get; set; }
         public bool OrderDescending { get; set; } = false;

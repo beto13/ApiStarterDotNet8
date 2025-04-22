@@ -1,7 +1,7 @@
 ﻿using Application.Common;
+using Application.Dtos.User;
 using Application.Interfaces.Persistence;
 using AutoMapper;
-using Domain.Dtos.User;
 using Domain.Entities;
 using MediatR;
 

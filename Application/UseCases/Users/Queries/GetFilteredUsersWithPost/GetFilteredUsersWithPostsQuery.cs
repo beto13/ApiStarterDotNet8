@@ -1,6 +1,6 @@
 ﻿using Application.Common;
 using Application.Common.Pagination;
-using Application.UseCases.Users.Dtos;
+using Application.Dtos.User;
 using MediatR;
 
 namespace Application.UseCases.Users.Queries.GetFilteredUsersWithPost

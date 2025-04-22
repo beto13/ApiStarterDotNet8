@@ -1,5 +1,5 @@
 ﻿using Application.Common;
-using Domain.Dtos.User;
+using Application.Dtos.User;
 using MediatR;
 
 namespace Application.UseCases.Users.Commands.Create

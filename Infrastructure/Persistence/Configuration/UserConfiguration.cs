@@ -14,6 +14,9 @@ namespace Infrastructure.Persistence.Configuration
                    .IsRequired()
                    .HasMaxLength(100);
 
+            builder.HasIndex(u => u.Email)
+                   .IsUnique();
+
             builder.HasMany(u => u.Posts)
                    .WithOne(p => p.User)
                    .HasForeignKey(p => p.UserId);

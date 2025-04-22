@@ -7,19 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="UseCases\Users\Queries\GetFilteredUsersWithPost\**" />
-    <EmbeddedResource Remove="UseCases\Users\Queries\GetFilteredUsersWithPost\**" />
-    <None Remove="UseCases\Users\Queries\GetFilteredUsersWithPost\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UseCases\Comments\Queries\" />
   </ItemGroup>
 
 </Project>

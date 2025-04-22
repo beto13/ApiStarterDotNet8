@@ -1,14 +1,9 @@
 ﻿using Application.Common.Pagination;
+using Application.Filtering.Interfaces;
 using Application.Interfaces.Persistence;
 using Domain.Entities;
-using Domain.Filters.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Repositories
 {
@@ -23,35 +18,37 @@ namespace Infrastructure.Persistence.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public async Task<T?> GetByIdAsync(Guid id)
+        public virtual async Task<T?> GetByIdAsync(Guid id)
             => await _dbSet.FindAsync(id);
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
             => await _dbSet.ToListAsync();
 
-        public async Task AddAsync(T entity)
+        public virtual async Task AddAsync(T entity)
             => await _dbSet.AddAsync(entity);
 
-        public void Remove(T entity)
+        public virtual void Remove(T entity)
             => _dbSet.Remove(entity);
 
-        public async Task<IEnumerable<T>> FilterAsync(Expression<Func<T, bool>> expression)
+        public virtual async Task<IEnumerable<T>> FilterAsync(Expression<Func<T, bool>> expression)
         {
             return await _dbSet.Where(expression).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetFilteredAndPagedAsync(
+        public virtual async Task<IEnumerable<T>> GetFilteredAndPagedAsync(
             Expression<Func<T, bool>> filter,
-            PaginationParameters paginationParams)
+            PaginationParameters paginationParams,
+            bool asNoTracking = false,
+            params Expression<Func<T, object>>[] includeProperties)
         {
-            var query = _dbSet.Where(filter)
-                              .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
-                              .Take(paginationParams.PageSize);
+            var query = GetQueryable(filter, asNoTracking, includeProperties)
+                        .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                        .Take(paginationParams.PageSize);
 
             return await query.ToListAsync();
         }
 
-        public virtual IQueryable<T> GetQueryable(
+        private IQueryable<T> GetQueryable(
             Expression<Func<T, bool>>? filter = null,
             bool asNoTracking = false,
             params Expression<Func<T, object>>[] includeProperties)
@@ -72,20 +69,7 @@ namespace Infrastructure.Persistence.Repositories
             return query;
         }
 
-        public async Task<IEnumerable<T>> GetFilteredAndPagedAsync(
-            Expression<Func<T, bool>> filter,
-            PaginationParameters paginationParams,
-            bool asNoTracking = false,
-            params Expression<Func<T, object>>[] includeProperties)
-        {
-            var query = GetQueryable(filter, asNoTracking, includeProperties)
-                        .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
-                        .Take(paginationParams.PageSize);
-
-            return await query.ToListAsync();
-        }
-
-        public async Task<PagedResult<T>> GetPagedResultAsync(
+        public async Task<PagedResult<T>> GetFilteredAndPagedAsync(
             List<IFilterStrategy<T>> filters,
             PaginationParameters pagination,
             bool asNoTracking = false,
@@ -145,6 +129,7 @@ namespace Infrastructure.Persistence.Repositories
 
             return await query.ToListAsync();
         }
+
         public void Update(T entity)
         {
             _dbSet.Attach(entity);
